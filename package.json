@@ -1,0 +1,26 @@
+{
+  "name": "castle-haozijunqaq-wx-utils",
+  "version": "1.0.1",
+  "description": "development utils for wx",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d dist"
+  },
+  "keywords": [
+    "Common",
+    "development",
+    "utils"
+  ],
+  "author": "haozijunqaq",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  }
+}
