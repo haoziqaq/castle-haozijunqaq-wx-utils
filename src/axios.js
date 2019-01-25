@@ -8,7 +8,19 @@ service.withCredentials = true;
 
 service.defaults.adapter = (config) => {
     return new Promise((resolve, reject) => {
-        console.log(config);
+        const { url , params: data, headers: header, method } = config;
+        wx.request({
+            url,
+            header,
+            method,
+            data,
+            success(res) {
+                resolve(res)
+            },
+            fail(res) {
+                reject(res);
+            },
+        })
     })
 };
 
@@ -25,6 +37,7 @@ service.interceptors.request.use(config => {
 });
 
 service.getData = (url, par, options = {}) => {
+    let taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
     let queryParams = {
         params: {
             _t: new Date().getTime()
@@ -48,14 +61,11 @@ service.getData = (url, par, options = {}) => {
     });
 };
 
-service.getBlob = (url, par, options = {}) => {
+service.postData = (url, par, options = {}) => {
     let queryParams = {
         params: {
             _t: new Date().getTime()
         }
-    };
-    let config = {
-        responseType: 'blob'
     };
     if (par) {
         let params = Object.assign(queryParams.params, par);
@@ -63,9 +73,9 @@ service.getBlob = (url, par, options = {}) => {
             params
         }
     }
-    queryParams = Object.assign(queryParams, config, options);
+    queryParams = Object.assign(queryParams, options);
     return new Promise((resolve, reject) => {
-        service.get(url, queryParams)
+        service.post(url, null, queryParams)
             .then(res => {
                 resolve(res);
             })
@@ -75,46 +85,21 @@ service.getBlob = (url, par, options = {}) => {
     });
 };
 
-service.postData = (url, params, options = {}) => {
-    return new Promise((resolve, reject) => {
-        service.post(url, qs.stringify(params), options)
-            .then(res => {
-                resolve(res);
-            })
-            .catch(error => {
-                reject(error);
-            });
-    });
-};
-
-service.postJSON = (url, params, options = {}) => {
-    return new Promise((resolve, reject) => {
-        service.post(url, params, options)
-            .then(res => {
-                resolve(res);
-            })
-            .catch(error => {
-                reject(error);
-            });
-    });
-};
-
-service.postMultipart = (url, params, options = {}) => {
-    let formdata = null;
-    let config = {
-        headers:{
-            'Content-Type':'multipart/form-data'
+service.postJSON = (url, par, options = {headers: {'Content-Type': 'application/json'}}) => {
+    let queryParams = {
+        params: {
+            _t: new Date().getTime()
         }
     };
-    if (params) {
-        formdata = new FormData();
-        Object.keys(params).forEach(key => {
-            formdata.append(key, params[key]);
-        })
+    if (par) {
+        let params = Object.assign(queryParams.params, par);
+        queryParams = {
+            params
+        }
     }
-    options = Object.assign(config, options);
+    queryParams = Object.assign(queryParams, options);
     return new Promise((resolve, reject) => {
-        service.post(url, formdata, options)
+        service.post(url, null, queryParams)
             .then(res => {
                 resolve(res);
             })
