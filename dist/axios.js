@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+var _arguments = arguments;
 
 var _axios = require('axios');
 
@@ -18,7 +19,23 @@ service.withCredentials = true;
 
 service.defaults.adapter = function (config) {
     return new Promise(function (resolve, reject) {
-        console.log(config);
+        var url = config.url,
+            data = config.params,
+            header = config.headers,
+            method = config.method;
+
+        wx.request({
+            url: url,
+            header: header,
+            method: method,
+            data: data,
+            success: function success(res) {
+                resolve(res);
+            },
+            fail: function fail(res) {
+                reject(res);
+            }
+        });
     });
 };
 
@@ -39,6 +56,7 @@ service.interceptors.request.use(function (config) {
 service.getData = function (url, par) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
+    var taskCallback = typeof _arguments[_arguments.length - 1] === 'function' ? _arguments[_arguments.length - 1] : null;
     var queryParams = {
         params: {
             _t: new Date().getTime()
@@ -60,7 +78,7 @@ service.getData = function (url, par) {
     });
 };
 
-service.getBlob = function (url, par) {
+service.postData = function (url, par) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     var queryParams = {
@@ -68,8 +86,29 @@ service.getBlob = function (url, par) {
             _t: new Date().getTime()
         }
     };
-    var config = {
-        responseType: 'blob'
+    if (par) {
+        var params = Object.assign(queryParams.params, par);
+        queryParams = {
+            params: params
+        };
+    }
+    queryParams = Object.assign(queryParams, options);
+    return new Promise(function (resolve, reject) {
+        service.post(url, null, queryParams).then(function (res) {
+            resolve(res);
+        }).catch(function (error) {
+            reject(error);
+        });
+    });
+};
+
+service.postJSON = function (url, par) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { headers: { 'Content-Type': 'application/json' } };
+
+    var queryParams = {
+        params: {
+            _t: new Date().getTime()
+        }
     };
     if (par) {
         var params = Object.assign(queryParams.params, par);
@@ -77,58 +116,9 @@ service.getBlob = function (url, par) {
             params: params
         };
     }
-    queryParams = Object.assign(queryParams, config, options);
+    queryParams = Object.assign(queryParams, options);
     return new Promise(function (resolve, reject) {
-        service.get(url, queryParams).then(function (res) {
-            resolve(res);
-        }).catch(function (error) {
-            reject(error);
-        });
-    });
-};
-
-service.postData = function (url, params) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    return new Promise(function (resolve, reject) {
-        service.post(url, qs.stringify(params), options).then(function (res) {
-            resolve(res);
-        }).catch(function (error) {
-            reject(error);
-        });
-    });
-};
-
-service.postJSON = function (url, params) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    return new Promise(function (resolve, reject) {
-        service.post(url, params, options).then(function (res) {
-            resolve(res);
-        }).catch(function (error) {
-            reject(error);
-        });
-    });
-};
-
-service.postMultipart = function (url, params) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    var formdata = null;
-    var config = {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    };
-    if (params) {
-        formdata = new FormData();
-        Object.keys(params).forEach(function (key) {
-            formdata.append(key, params[key]);
-        });
-    }
-    options = Object.assign(config, options);
-    return new Promise(function (resolve, reject) {
-        service.post(url, formdata, options).then(function (res) {
+        service.post(url, null, queryParams).then(function (res) {
             resolve(res);
         }).catch(function (error) {
             reject(error);
