@@ -134,6 +134,10 @@ export default {
         }
         return fmt;
     },
+
+    $cloneDeep(origin) {
+        return JSON.parse(JSON.stringify(origin));
+    }
     
 }
 

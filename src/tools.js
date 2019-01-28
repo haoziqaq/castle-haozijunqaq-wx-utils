@@ -93,10 +93,10 @@ export default {
         });
     },
 
-    $navigateBack(url) {
+    $navigateBack(delta) {
         return new Promise((resolve, reject) => {
             wx.navigateBack({
-                url,
+                delta,
                 success(res) {
                     resolve(res);
                 },
@@ -138,7 +138,7 @@ export default {
 
     $clearLocal() {
         wx.clearStorageSync()
-    }
+    },
 
 
 }
