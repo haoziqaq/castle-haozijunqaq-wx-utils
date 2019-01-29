@@ -50,7 +50,6 @@ service.interceptors.request.use(config => {
 });
 
 service.getData = (url, par, options = {}) => {
-    let taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
     let queryParams = {
         params: {
             _t: new Date().getTime()
@@ -122,25 +121,28 @@ service.postJSON = (url, par, options = {headers: {'Content-Type': 'application/
     });
 };
 
-service.postMultipart = (url, par = {}, options = {}) => {
-    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === url);
-    const taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
+service.postMultipart = (url, par = {}, options = {}, taskCallback) => {
+    const reqURL = (url.indexOf('http') !== -1 || url.indexOf('https') !== -1) ? url : `${service.defaults.baseURL}${url}`
+    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === reqURL);
     const [name = '', filePath = ''] = getObjectFirstProperty(par);
     deleteObjectFirstProperty(par);
-    let header = options.headers ? options.headers : {};
+    let header = {};
     if (!hasUrl) {
         headerOptions.forEach((headers) => {
             header[headers[0]] = headers[1];
         });
     }
+    options = options || {};
+    header = Object.assign(header, options.headers || {})
     return new Promise((resolve, reject) => {
         const task = wx.uploadFile({
-            url: `${service.defaults.baseURL}${url}`,
+            url: reqURL,
             filePath,
             name,
             header,
             formData: par,
             success(res) {
+                res.data = JSON.parse(res.data);
                 resolve(res);
             },
             fail(res) {
@@ -179,19 +181,26 @@ service.changeIsWithCredentials = (isWithCredentials) => {
     service.withCredentials = isWithCredentials;
 };
 
-service.download = (url, options = {}) => {
-    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === url);
-    const taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
+service.download = (url, par = {}, options = {}, taskCallback) => {
     const filePath = options.filePath ? options.filePath : null;
-    let header = options.headers ? options.headers : {};
+    const reqURL = (url.indexOf('http') !== -1 || url.indexOf('https') !== -1) ? url : `${service.defaults.baseURL}${url}`
+    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === reqURL);
+    let queryString = reqURL.indexOf('?') !== -1 ? '' : '?';
+    Object.keys(par).forEach(key => {
+        queryString += `${key}=${par[key]}&`
+    })
+    queryString = queryString.substring(0, queryString.length - 1);
+    let header = {};
     if (!hasUrl) {
         headerOptions.forEach((headers) => {
             header[headers[0]] = headers[1];
         });
     }
+    options = options || {};
+    header = Object.assign(header, options.headers || {})
     return new Promise((resolve, reject) => {
         const task = wx.downloadFile({
-            url: `${service.defaults.baseURL}${url}`,
+            url: `${reqURL}${queryString}`,
             header,
             filePath,
             success(res) {

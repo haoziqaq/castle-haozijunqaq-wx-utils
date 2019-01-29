@@ -149,11 +149,11 @@ service.postJSON = function (url, par) {
 service.postMultipart = function (url) {
     var par = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var taskCallback = arguments[3];
 
     var hasUrl = headerExceptRequestURLs.some(function (exceptURL) {
         return exceptURL === url;
     });
-    var taskCallback = typeof _arguments[_arguments.length - 1] === 'function' ? _arguments[_arguments.length - 1] : null;
 
     var _getObjectFirstProper = getObjectFirstProperty(par),
         _getObjectFirstProper2 = _slicedToArray(_getObjectFirstProper, 2),
@@ -226,11 +226,11 @@ service.changeIsWithCredentials = function (isWithCredentials) {
 
 service.download = function (url) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var taskCallback = arguments[2];
 
     var hasUrl = headerExceptRequestURLs.some(function (exceptURL) {
         return exceptURL === url;
     });
-    var taskCallback = typeof _arguments[_arguments.length - 1] === 'function' ? _arguments[_arguments.length - 1] : null;
     var filePath = options.filePath ? options.filePath : null;
     var header = options.headers ? options.headers : {};
     if (!hasUrl) {
