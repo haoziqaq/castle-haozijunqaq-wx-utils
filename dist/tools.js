@@ -4,48 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.default = {
-    $downloadFile: function $downloadFile(url) {
-        var header = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-        var filePath = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-
-        var taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
-        return new Promise(function (resolve, reject) {
-            var task = wx.downloadFile({
-                url: url,
-                header: header,
-                filePath: filePath,
-                success: function success(res) {
-                    resolve(res);
-                },
-                fail: function fail(res) {
-                    reject(res);
-                }
-            });
-            if (taskCallback) taskCallback(task);
-        });
-    },
-    $uploadFile: function $uploadFile(url, filePath, name) {
-        var header = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-        var formData = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
-
-        var taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
-        return new Promise(function (resolve, reject) {
-            var task = wx.uploadFile({
-                url: url,
-                filePath: filePath,
-                name: name,
-                header: header,
-                formData: formData,
-                success: function success(res) {
-                    resolve(res);
-                },
-                fail: function fail(res) {
-                    reject(res);
-                }
-            });
-            if (taskCallback) taskCallback(task);
-        });
-    },
     $switchTab: function $switchTab(url) {
         return new Promise(function (resolve, reject) {
             wx.switchTab({
@@ -98,10 +56,10 @@ exports.default = {
             });
         });
     },
-    $navigateBack: function $navigateBack(url) {
+    $navigateBack: function $navigateBack(delta) {
         return new Promise(function (resolve, reject) {
             wx.navigateBack({
-                url: url,
+                delta: delta,
                 success: function success(res) {
                     resolve(res);
                 },

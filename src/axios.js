@@ -1,5 +1,18 @@
 import axios from 'axios'
 
+const getObjectFirstProperty = (object = {}) => {
+    for (let key in object) {
+        return [key, object[key]];
+    }
+};
+
+const deleteObjectFirstProperty = (object = {}) => {
+    for (let key in object) {
+        delete object[key];
+        return
+    }
+};
+
 let headerExceptRequestURLs = [];
 let headerOptions = [];
 
@@ -109,6 +122,35 @@ service.postJSON = (url, par, options = {headers: {'Content-Type': 'application/
     });
 };
 
+service.postMultipart = (url, par = {}, options = {}) => {
+    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === url);
+    const taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
+    const [name = '', filePath = ''] = getObjectFirstProperty(par);
+    deleteObjectFirstProperty(par);
+    let header = options.headers ? options.headers : {};
+    if (!hasUrl) {
+        headerOptions.forEach((headers) => {
+            header[headers[0]] = headers[1];
+        });
+    }
+    return new Promise((resolve, reject) => {
+        const task = wx.uploadFile({
+            url: `${service.defaults.baseURL}${url}`,
+            filePath,
+            name,
+            header,
+            formData: par,
+            success(res) {
+                resolve(res);
+            },
+            fail(res) {
+                reject(res);
+            }
+        });
+        if (taskCallback) taskCallback(task);
+    })
+};
+
 service.setBaseUrl = (baseURL) => {
     service.defaults.baseURL = baseURL;
 };
@@ -136,6 +178,34 @@ service.setHeadersExcept = (URLs = []) => {
 service.changeIsWithCredentials = (isWithCredentials) => {
     service.withCredentials = isWithCredentials;
 };
+
+service.download = (url, options = {}) => {
+    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === url);
+    const taskCallback = typeof arguments[arguments.length - 1] === 'function' ? arguments[arguments.length - 1] : null;
+    const filePath = options.filePath ? options.filePath : null;
+    let header = options.headers ? options.headers : {};
+    if (!hasUrl) {
+        headerOptions.forEach((headers) => {
+            header[headers[0]] = headers[1];
+        });
+    }
+    return new Promise((resolve, reject) => {
+        const task = wx.downloadFile({
+            url: `${service.defaults.baseURL}${url}`,
+            header,
+            filePath,
+            success(res) {
+                resolve(res);
+            },
+            fail(res) {
+                reject(res);
+            }
+        });
+        if (taskCallback) taskCallback(task);
+    })
+};
+
+
 
 
 export default service;

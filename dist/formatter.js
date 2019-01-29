@@ -146,5 +146,8 @@ exports.default = {
             }
         }
         return fmt;
+    },
+    $cloneDeep: function $cloneDeep(origin) {
+        return JSON.parse(JSON.stringify(origin));
     }
 };
