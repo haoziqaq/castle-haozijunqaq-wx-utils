@@ -73,6 +73,39 @@ service.getData = (url, par, options = {}) => {
     });
 };
 
+service.getBlob = (url, par = {}, options = {}, taskCallback) => {
+    const filePath = options.filePath ? options.filePath : null;
+    const reqURL = (url.indexOf('http') !== -1 || url.indexOf('https') !== -1) ? url : `${service.defaults.baseURL}${url}`
+    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === reqURL);
+    let queryString = reqURL.indexOf('?') !== -1 ? '' : '?';
+    Object.keys(par).forEach(key => {
+        queryString += `${key}=${par[key]}&`
+    })
+    queryString = queryString.substring(0, queryString.length - 1);
+    let header = {};
+    if (!hasUrl) {
+        headerOptions.forEach((headers) => {
+            header[headers[0]] = headers[1];
+        });
+    }
+    options = options || {};
+    header = Object.assign(header, options.headers || {})
+    return new Promise((resolve, reject) => {
+        const task = wx.downloadFile({
+            url: `${reqURL}${queryString}`,
+            header,
+            filePath,
+            success(res) {
+                resolve(res);
+            },
+            fail(res) {
+                reject(res);
+            }
+        });
+        if (taskCallback) taskCallback(task);
+    })
+};
+
 service.postData = (url, par, options = {}) => {
     let queryParams = {
         params: {
@@ -181,38 +214,6 @@ service.changeIsWithCredentials = (isWithCredentials) => {
     service.withCredentials = isWithCredentials;
 };
 
-service.download = (url, par = {}, options = {}, taskCallback) => {
-    const filePath = options.filePath ? options.filePath : null;
-    const reqURL = (url.indexOf('http') !== -1 || url.indexOf('https') !== -1) ? url : `${service.defaults.baseURL}${url}`
-    const hasUrl = headerExceptRequestURLs.some(exceptURL => exceptURL === reqURL);
-    let queryString = reqURL.indexOf('?') !== -1 ? '' : '?';
-    Object.keys(par).forEach(key => {
-        queryString += `${key}=${par[key]}&`
-    })
-    queryString = queryString.substring(0, queryString.length - 1);
-    let header = {};
-    if (!hasUrl) {
-        headerOptions.forEach((headers) => {
-            header[headers[0]] = headers[1];
-        });
-    }
-    options = options || {};
-    header = Object.assign(header, options.headers || {})
-    return new Promise((resolve, reject) => {
-        const task = wx.downloadFile({
-            url: `${reqURL}${queryString}`,
-            header,
-            filePath,
-            success(res) {
-                resolve(res);
-            },
-            fail(res) {
-                reject(res);
-            }
-        });
-        if (taskCallback) taskCallback(task);
-    })
-};
 
 
 

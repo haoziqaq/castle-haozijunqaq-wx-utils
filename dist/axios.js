@@ -95,6 +95,45 @@ service.getData = function (url, par) {
     });
 };
 
+service.getBlob = function (url) {
+    var par = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var taskCallback = arguments[3];
+
+    var filePath = options.filePath ? options.filePath : null;
+    var reqURL = url.indexOf('http') !== -1 || url.indexOf('https') !== -1 ? url : '' + service.defaults.baseURL + url;
+    var hasUrl = headerExceptRequestURLs.some(function (exceptURL) {
+        return exceptURL === reqURL;
+    });
+    var queryString = reqURL.indexOf('?') !== -1 ? '' : '?';
+    Object.keys(par).forEach(function (key) {
+        queryString += key + '=' + par[key] + '&';
+    });
+    queryString = queryString.substring(0, queryString.length - 1);
+    var header = {};
+    if (!hasUrl) {
+        headerOptions.forEach(function (headers) {
+            header[headers[0]] = headers[1];
+        });
+    }
+    options = options || {};
+    header = Object.assign(header, options.headers || {});
+    return new Promise(function (resolve, reject) {
+        var task = wx.downloadFile({
+            url: '' + reqURL + queryString,
+            header: header,
+            filePath: filePath,
+            success: function success(res) {
+                resolve(res);
+            },
+            fail: function fail(res) {
+                reject(res);
+            }
+        });
+        if (taskCallback) taskCallback(task);
+    });
+};
+
 service.postData = function (url, par) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -223,45 +262,6 @@ service.setHeadersExcept = function () {
 
 service.changeIsWithCredentials = function (isWithCredentials) {
     service.withCredentials = isWithCredentials;
-};
-
-service.download = function (url) {
-    var par = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var taskCallback = arguments[3];
-
-    var filePath = options.filePath ? options.filePath : null;
-    var reqURL = url.indexOf('http') !== -1 || url.indexOf('https') !== -1 ? url : '' + service.defaults.baseURL + url;
-    var hasUrl = headerExceptRequestURLs.some(function (exceptURL) {
-        return exceptURL === reqURL;
-    });
-    var queryString = reqURL.indexOf('?') !== -1 ? '' : '?';
-    Object.keys(par).forEach(function (key) {
-        queryString += key + '=' + par[key] + '&';
-    });
-    queryString = queryString.substring(0, queryString.length - 1);
-    var header = {};
-    if (!hasUrl) {
-        headerOptions.forEach(function (headers) {
-            header[headers[0]] = headers[1];
-        });
-    }
-    options = options || {};
-    header = Object.assign(header, options.headers || {});
-    return new Promise(function (resolve, reject) {
-        var task = wx.downloadFile({
-            url: '' + reqURL + queryString,
-            header: header,
-            filePath: filePath,
-            success: function success(res) {
-                resolve(res);
-            },
-            fail: function fail(res) {
-                reject(res);
-            }
-        });
-        if (taskCallback) taskCallback(task);
-    });
 };
 
 exports.default = service;
