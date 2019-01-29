@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _arguments = arguments;
-
 var _axios = require('axios');
 
 var _axios2 = _interopRequireDefault(_axios);
@@ -76,7 +74,6 @@ service.interceptors.request.use(function (config) {
 service.getData = function (url, par) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-    var taskCallback = typeof _arguments[_arguments.length - 1] === 'function' ? _arguments[_arguments.length - 1] : null;
     var queryParams = {
         params: {
             _t: new Date().getTime()
@@ -151,8 +148,9 @@ service.postMultipart = function (url) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var taskCallback = arguments[3];
 
+    var reqURL = url.indexOf('http') !== -1 || url.indexOf('https') !== -1 ? url : '' + service.defaults.baseURL + url;
     var hasUrl = headerExceptRequestURLs.some(function (exceptURL) {
-        return exceptURL === url;
+        return exceptURL === reqURL;
     });
 
     var _getObjectFirstProper = getObjectFirstProperty(par),
@@ -163,20 +161,23 @@ service.postMultipart = function (url) {
         filePath = _getObjectFirstProper4 === undefined ? '' : _getObjectFirstProper4;
 
     deleteObjectFirstProperty(par);
-    var header = options.headers ? options.headers : {};
+    var header = {};
     if (!hasUrl) {
         headerOptions.forEach(function (headers) {
             header[headers[0]] = headers[1];
         });
     }
+    options = options || {};
+    header = Object.assign(header, options.headers || {});
     return new Promise(function (resolve, reject) {
         var task = wx.uploadFile({
-            url: '' + service.defaults.baseURL + url,
+            url: reqURL,
             filePath: filePath,
             name: name,
             header: header,
             formData: par,
             success: function success(res) {
+                res.data = JSON.parse(res.data);
                 resolve(res);
             },
             fail: function fail(res) {
@@ -225,22 +226,31 @@ service.changeIsWithCredentials = function (isWithCredentials) {
 };
 
 service.download = function (url) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var taskCallback = arguments[2];
+    var par = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var taskCallback = arguments[3];
 
-    var hasUrl = headerExceptRequestURLs.some(function (exceptURL) {
-        return exceptURL === url;
-    });
     var filePath = options.filePath ? options.filePath : null;
-    var header = options.headers ? options.headers : {};
+    var reqURL = url.indexOf('http') !== -1 || url.indexOf('https') !== -1 ? url : '' + service.defaults.baseURL + url;
+    var hasUrl = headerExceptRequestURLs.some(function (exceptURL) {
+        return exceptURL === reqURL;
+    });
+    var queryString = reqURL.indexOf('?') !== -1 ? '' : '?';
+    Object.keys(par).forEach(function (key) {
+        queryString += key + '=' + par[key] + '&';
+    });
+    queryString = queryString.substring(0, queryString.length - 1);
+    var header = {};
     if (!hasUrl) {
         headerOptions.forEach(function (headers) {
             header[headers[0]] = headers[1];
         });
     }
+    options = options || {};
+    header = Object.assign(header, options.headers || {});
     return new Promise(function (resolve, reject) {
         var task = wx.downloadFile({
-            url: '' + service.defaults.baseURL + url,
+            url: '' + reqURL + queryString,
             header: header,
             filePath: filePath,
             success: function success(res) {
