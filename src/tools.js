@@ -1,4 +1,80 @@
 export default {
+    $showModal(title, content, showCancel = true, cancelText = '取消', cancelColor = '#000000', confirmText = '确定', confirmColor = '#576B95') {
+        return new Promise((resolve, reject) => {
+            wx.showModal({
+                title,
+                content,
+                showCancel,
+                cancelText,
+                cancelColor,
+                confirmText,
+                confirmColor,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
+    $showLoading(title, mask = false) {
+        return new Promise((resolve, reject) => {
+            wx.showLoading({
+                title,
+                mask,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
+    $showActionSheet(itemList, itemColor = '#000000', ) {
+        return new Promise((resolve, reject) => {
+            wx.showActionSheet({
+                itemList,
+                itemColor,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
+    $hideToast() {
+        return new Promise((resolve, reject) => {
+            wx.hideToast({
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
+    $hideLoading() {
+        return new Promise((resolve, reject) => {
+            wx.hideLoading({
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
     $showToast(title, icon = 'success', image, duration = 1500, mask = false) {
         return new Promise((resolve, reject) => {
             wx.showToast({

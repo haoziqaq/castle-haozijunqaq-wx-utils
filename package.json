@@ -1,6 +1,6 @@
 {
   "name": "castle-haozijunqaq-wx-utils",
-  "version": "1.0.15",
+  "version": "1.0.17",
   "description": "development utils for wx",
   "main": "dist/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "babel src -d dist"
   },
   "keywords": [
-    "Common",
+    "WX",
     "development",
     "utils"
   ],

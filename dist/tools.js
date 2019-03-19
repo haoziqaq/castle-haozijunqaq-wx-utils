@@ -4,6 +4,87 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.default = {
+    $showModal: function $showModal(title, content) {
+        var showCancel = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+        var cancelText = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '取消';
+        var cancelColor = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '#000000';
+        var confirmText = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : '确定';
+        var confirmColor = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : '#576B95';
+
+        return new Promise(function (resolve, reject) {
+            wx.showModal({
+                title: title,
+                content: content,
+                showCancel: showCancel,
+                cancelText: cancelText,
+                cancelColor: cancelColor,
+                confirmText: confirmText,
+                confirmColor: confirmColor,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
+    $showLoading: function $showLoading(title) {
+        var mask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        return new Promise(function (resolve, reject) {
+            wx.showLoading({
+                title: title,
+                mask: mask,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
+    $showActionSheet: function $showActionSheet(itemList) {
+        var itemColor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#000000';
+
+        return new Promise(function (resolve, reject) {
+            wx.showActionSheet({
+                itemList: itemList,
+                itemColor: itemColor,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
+    $hideToast: function $hideToast() {
+        return new Promise(function (resolve, reject) {
+            wx.hideToast({
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
+    $hideLoading: function $hideLoading() {
+        return new Promise(function (resolve, reject) {
+            wx.hideLoading({
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
     $showToast: function $showToast(title) {
         var icon = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
         var image = arguments[2];
