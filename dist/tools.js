@@ -75,13 +75,42 @@ exports.default = {
         });
     },
     $getWeRunData: function $getWeRunData() {
+        var _this = this;
+
         return new Promise(function (resolve, reject) {
             wx.getWeRunData({
                 success: function success(res) {
                     resolve(res);
+                    _this.$showToast('授权成功');
                 },
                 fail: function fail(e) {
-                    reject(e);
+                    if (e.errMsg.includes('auth')) {
+                        wx.showModal({
+                            title: '请求授权',
+                            content: '小程序需要获取您的微信步数信息',
+                            showCancel: false,
+                            success: function success() {
+                                _this.$openSetting().then(function (settingData) {
+                                    if (settingData.authSetting["scope.werun"]) {
+                                        _this.$showToast('授权成功');
+                                        _this.$getWeRunData().then(function (res) {
+                                            resolve(res);
+                                        }).catch(function (e) {
+                                            reject(e);
+                                        });
+                                    } else {
+                                        _this.$showToast('授权被拒绝');
+                                        reject({ errMsg: 'auth refused' });
+                                    }
+                                });
+                            },
+                            fail: function fail() {
+                                reject({ errMsg: 'auth refused' });
+                            }
+                        });
+                    } else {
+                        _this.$showToast('获取失败', 'none');
+                    }
                 }
             });
         });
@@ -260,29 +289,42 @@ exports.default = {
         });
     },
     $saveImageToPhotosAlbum: function $saveImageToPhotosAlbum(filePath) {
-        var _this = this;
+        var _this2 = this;
 
         var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
 
-        wx.saveImageToPhotosAlbum({
-            filePath: filePath,
-            success: function success(res) {
-                _this.$showToast('保存成功');
-            },
-            fail: function fail(e) {
-                if (e.errMsg === "saveImageToPhotosAlbum:fail auth deny") {
-                    _this.$openSetting().then(function (settingData) {
-                        if (settingData.authSetting["scope.writePhotosAlbum"]) {
-                            _this.$showToast('请重新保存');
-                            callback();
-                        } else {
-                            _this.$showToast('获取权限失败', 'none');
-                        }
-                    });
-                } else {
-                    _this.$showToast('保存失败', 'none');
+        return new Promise(function (resolve, reject) {
+            wx.saveImageToPhotosAlbum({
+                filePath: filePath,
+                success: function success(res) {
+                    _this2.$showToast('保存成功');
+                },
+                fail: function fail(e) {
+                    if (e.errMsg.includes('auth')) {
+                        wx.showModal({
+                            title: '请求授权',
+                            content: '小程序需要写入您的相册',
+                            showCancel: false,
+                            success: function success() {
+                                _this2.$openSetting().then(function (settingData) {
+                                    if (settingData.authSetting["scope.writePhotosAlbum"]) {
+                                        callback();
+                                        _this2.$showToast('授权成功');
+                                    } else {
+                                        _this2.$showToast('授权被拒绝', 'none');
+                                        reject({ errMsg: 'auth refused' });
+                                    }
+                                });
+                            },
+                            fail: function fail() {
+                                reject({ errMsg: 'auth refused' });
+                            }
+                        });
+                    } else {
+                        _this2.$showToast('保存失败', 'none');
+                    }
                 }
-            }
+            });
         });
     },
     $getSystemInfo: function $getSystemInfo() {

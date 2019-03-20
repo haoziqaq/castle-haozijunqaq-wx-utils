@@ -66,13 +66,42 @@ export default {
     $getWeRunData() {
         return new Promise(((resolve, reject) => {
             wx.getWeRunData({
-                success(res) {
+                success:(res) => {
                     resolve(res);
+                    this.$showToast('授权成功');
                 },
-                fail(e) {
-                    reject(e);
+                fail:(e) => {
+                    if (e.errMsg.includes('auth')) {
+                        wx.showModal({
+                            title: '请求授权',
+                            content: '小程序需要获取您的微信步数信息',
+                            showCancel: false,
+                            success:() => {
+                                this.$openSetting().then((settingData) => {
+                                    if (settingData.authSetting["scope.werun"]) {
+                                        this.$showToast('授权成功');
+                                        this.$getWeRunData()
+                                            .then((res) => {
+                                                resolve(res);
+                                            })
+                                            .catch((e) => {
+                                                reject(e);
+                                            })
+                                    } else {
+                                        this.$showToast('授权被拒绝');
+                                        reject({errMsg: 'auth refused'});
+                                    }
+                                });
+                            },
+                            fail:() => {
+                                reject({errMsg: 'auth refused'});
+                            }
+                        })
+                    } else {
+                        this.$showToast('获取失败', 'none');
+                    }
                 }
-            })
+            });
         }))
     },
 
@@ -242,27 +271,39 @@ export default {
     },
 
     $saveImageToPhotosAlbum(filePath, callback = () => {}) {
-        wx.saveImageToPhotosAlbum({
-            filePath,
-            success:(res) => {
-                this.$showToast('保存成功');
-            },
-            fail: (e) => {
-                if (e.errMsg === "saveImageToPhotosAlbum:fail auth deny") {
-                    this.$openSetting()
-                        .then(settingData => {
-                            if (settingData.authSetting["scope.writePhotosAlbum"]) {
-                                this.$showToast('请重新保存');
-                                callback();
-                            } else {
-                                this.$showToast('获取权限失败', 'none');
+        return new Promise(((resolve, reject) => {
+            wx.saveImageToPhotosAlbum({
+                filePath,
+                success:(res) => {
+                    this.$showToast('保存成功');
+                },
+                fail: (e) => {
+                    if (e.errMsg.includes('auth')) {
+                        wx.showModal({
+                            title: '请求授权',
+                            content: '小程序需要写入您的相册',
+                            showCancel: false,
+                            success:() => {
+                                this.$openSetting().then((settingData) => {
+                                    if (settingData.authSetting["scope.writePhotosAlbum"]) {
+                                        callback();
+                                        this.$showToast('授权成功');
+                                    } else {
+                                        this.$showToast('授权被拒绝', 'none');
+                                        reject({errMsg: 'auth refused'})
+                                    }
+                                });
+                            },
+                            fail:() => {
+                                reject({errMsg: 'auth refused'})
                             }
                         })
-                } else {
-                    this.$showToast('保存失败', 'none');
+                    } else {
+                        this.$showToast('保存失败', 'none');
+                    }
                 }
-            }
-        })
+            })
+        }))
     },
 
     $getSystemInfo() {
