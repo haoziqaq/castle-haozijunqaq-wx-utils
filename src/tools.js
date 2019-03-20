@@ -68,7 +68,6 @@ export default {
             wx.getWeRunData({
                 success:(res) => {
                     resolve(res);
-                    this.$showToast('授权成功');
                 },
                 fail:(e) => {
                     if (e.errMsg.includes('auth')) {
