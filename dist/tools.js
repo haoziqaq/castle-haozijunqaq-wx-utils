@@ -61,6 +61,31 @@ exports.default = {
             });
         });
     },
+    $login: function $login(timeout) {
+        return new Promise(function (resolve, reject) {
+            wx.login({
+                timeout: timeout,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
+    $getWeRunData: function $getWeRunData() {
+        return new Promise(function (resolve, reject) {
+            wx.getWeRunData({
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
     $hideToast: function $hideToast() {
         return new Promise(function (resolve, reject) {
             wx.hideToast({

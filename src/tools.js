@@ -49,6 +49,33 @@ export default {
         })
     },
 
+    $login(timeout) {
+        return new Promise(((resolve, reject) => {
+            wx.login({
+                timeout,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        }))
+    },
+
+    $getWeRunData() {
+        return new Promise(((resolve, reject) => {
+            wx.getWeRunData({
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        }))
+    },
+
     $hideToast() {
         return new Promise((resolve, reject) => {
             wx.hideToast({
