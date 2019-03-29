@@ -15,6 +15,8 @@ const deleteObjectFirstProperty = (object = {}) => {
 
 let headerExceptRequestURLs = [];
 let headerOptions = [];
+let handleGlobalServerException = (response) => {};
+let handleGlobalServerCode = (error) => {};
 
 const service = axios.create();
 service.withCredentials = true;
@@ -48,6 +50,17 @@ service.interceptors.request.use(config => {
 }, error => {
     Promise.reject(error)
 });
+
+service.interceptors.response.use(
+    response => {
+        handleGlobalServerCode(response);
+        return response;
+    },
+    error => {  //响应错误处理
+        handleGlobalServerException(error);
+        return Promise.reject(error)
+    }
+);
 
 service.getData = (url, par, options = {}) => {
     let queryParams = {
@@ -190,20 +203,12 @@ service.setBaseUrl = (baseURL) => {
     service.defaults.baseURL = baseURL;
 };
 
-service.getBaseUrl = (baseURL) => service.defaults.baseURL;
-
 service.setTimeout = (time) => {
     service.defaults.timeout = time;
 };
 
-service.getTimeout = (time) => service.defaults.timeout;
-
 service.addHeader = (key = '', value = '') => {
     headerOptions.push([key, value])
-};
-
-service.resetHeaders = () => {
-    headerOptions = [];
 };
 
 service.setHeadersExcept = (URLs = []) => {
@@ -214,6 +219,13 @@ service.changeIsWithCredentials = (isWithCredentials) => {
     service.withCredentials = isWithCredentials;
 };
 
+service.setHandleGlobalServerException = (fn) => {
+    handleGlobalServerException = fn;
+};
+
+service.setHandleGlobalServerCode = (fn) => {
+    handleGlobalServerCode = fn;
+};
 
 
 
