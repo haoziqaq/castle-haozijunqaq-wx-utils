@@ -46,6 +46,21 @@ export default {
         }
     },
 
+    $getUserInfo(withCredentials, lang) {
+        return new Promise((resolve, reject) => {
+            wx.getUserInfo({
+                withCredentials,
+                lang,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
     $showModal(title, content, showCancel = true, cancelText = '取消', cancelColor = '#000000', confirmText = '确定', confirmColor = '#576B95') {
         return new Promise((resolve, reject) => {
             wx.showModal({
@@ -394,4 +409,30 @@ export default {
     $clearLocal() {
         wx.clearStorageSync()
     },
+
+    $startPullDownRefresh() {
+        return new Promise((resolve, reject) => {
+            wx.startPullDownRefresh({
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e)
+                }
+            })
+        });
+    },
+
+    $stopPullDownRefresh() {
+        return new Promise((resolve, reject) => {
+            wx.stopPullDownRefresh({
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e)
+                }
+            })
+        });
+    }
 }

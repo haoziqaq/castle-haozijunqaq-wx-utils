@@ -51,6 +51,20 @@ exports.default = {
             }
         };
     },
+    $getUserInfo: function $getUserInfo(withCredentials, lang) {
+        return new Promise(function (resolve, reject) {
+            wx.getUserInfo({
+                withCredentials: withCredentials,
+                lang: lang,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
     $showModal: function $showModal(title, content) {
         var showCancel = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
         var cancelText = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '取消';
@@ -409,5 +423,29 @@ exports.default = {
     },
     $clearLocal: function $clearLocal() {
         wx.clearStorageSync();
+    },
+    $startPullDownRefresh: function $startPullDownRefresh() {
+        return new Promise(function (resolve, reject) {
+            wx.startPullDownRefresh({
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
+    $stopPullDownRefresh: function $stopPullDownRefresh() {
+        return new Promise(function (resolve, reject) {
+            wx.stopPullDownRefresh({
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
     }
 };
