@@ -416,7 +416,12 @@ exports.default = {
         wx.setStorageSync(key, JSON.stringify(value));
     },
     $getLocal: function $getLocal(key) {
-        return JSON.parse(wx.getStorageSync(key));
+        try {
+            var value = wx.getStorageSync(key);
+            if (value) return JSON.parse(value);
+        } catch (e) {
+            console.log(e);
+        }
     },
     $removeLocal: function $removeLocal(key) {
         wx.removeStorageSync(key);

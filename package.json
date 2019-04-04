@@ -1,6 +1,6 @@
 {
   "name": "castle-haozijunqaq-wx-utils",
-  "version": "1.1.41",
+  "version": "1.1.42",
   "description": "development utils for wx",
   "main": "dist/index.js",
   "scripts": {

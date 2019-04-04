@@ -399,7 +399,12 @@ export default {
     },
 
     $getLocal(key) {
-        return JSON.parse(wx.getStorageSync(key));
+        try {
+            const value = wx.getStorageSync(key);
+            if (value) return JSON.parse(value);
+        } catch (e) {
+            console.log(e);
+        }
     },
 
     $removeLocal(key) {
