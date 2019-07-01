@@ -439,5 +439,39 @@ export default {
                 }
             })
         });
-    }
+    },
+
+    $previewImage(urls = [], current = '') {
+        return new Promise((resolve, reject) => {
+            wx.previewImage({
+                urls,
+                current,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
+    $requestPayment(timeStamp, nonceStr, pack, signType, paySign) {
+        return new Promise((resolve, reject) => {
+            wx.requestPayment({
+                timeStamp,
+                nonceStr,
+                package: pack,
+                signType,
+                paySign,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
+
 }

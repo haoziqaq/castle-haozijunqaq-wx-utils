@@ -452,5 +452,39 @@ exports.default = {
                 }
             });
         });
+    },
+    $previewImage: function $previewImage() {
+        var urls = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var current = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+        return new Promise(function (resolve, reject) {
+            wx.previewImage({
+                urls: urls,
+                current: current,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
+    },
+    $requestPayment: function $requestPayment(timeStamp, nonceStr, pack, signType, paySign) {
+        return new Promise(function (resolve, reject) {
+            wx.requestPayment({
+                timeStamp: timeStamp,
+                nonceStr: nonceStr,
+                package: pack,
+                signType: signType,
+                paySign: paySign,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
     }
 };
