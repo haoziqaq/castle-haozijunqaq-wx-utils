@@ -261,7 +261,7 @@ service.changeIsWithCredentials = function (isWithCredentials) {
     service.withCredentials = isWithCredentials;
 };
 
-service.setServerCodeHandler = function (fn) {
+service.setResultCodeHandler = function (fn) {
     handleGlobalServerCode = fn;
 };
 
