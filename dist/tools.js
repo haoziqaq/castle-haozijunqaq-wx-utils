@@ -486,5 +486,18 @@ exports.default = {
                 }
             });
         });
+    },
+    $makePhoneCall: function $makePhoneCall(phoneNumber) {
+        return new Promise(function (resolve, reject) {
+            wx.makePhoneCall({
+                phoneNumber: phoneNumber,
+                success: function success(res) {
+                    resolve(res);
+                },
+                fail: function fail(e) {
+                    reject(e);
+                }
+            });
+        });
     }
 };

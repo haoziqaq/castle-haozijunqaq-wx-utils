@@ -473,5 +473,17 @@ export default {
             })
         })
     },
-
+    $makePhoneCall(phoneNumber) {
+        return new Promise((resolve, reject) => {
+            wx.makePhoneCall({
+                phoneNumber,
+                success(res) {
+                    resolve(res);
+                },
+                fail(e) {
+                    reject(e);
+                }
+            })
+        })
+    },
 }
