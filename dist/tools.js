@@ -369,7 +369,7 @@ exports.default = {
                                 _this2.$openSetting().then(function (settingData) {
                                     if (settingData.authSetting["scope.writePhotosAlbum"]) {
                                         callback();
-                                        _this2.$showToast('授权成功');
+                                        _this2.$showToast('授权成功, 请重试保存', 'none');
                                     } else {
                                         _this2.$showToast('授权被拒绝', 'none');
                                         reject({ errMsg: 'auth refused' });

@@ -348,7 +348,7 @@ export default {
                                 this.$openSetting().then((settingData) => {
                                     if (settingData.authSetting["scope.writePhotosAlbum"]) {
                                         callback();
-                                        this.$showToast('授权成功');
+                                        this.$showToast('授权成功, 请重试保存', 'none');
                                     } else {
                                         this.$showToast('授权被拒绝', 'none');
                                         reject({errMsg: 'auth refused'})
