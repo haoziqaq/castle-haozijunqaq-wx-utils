@@ -1,5 +1,16 @@
 export default {
     /**
+     * 函数柯里化
+     * @param fn {function} 需要函数柯里化的函数
+     * @param args 需要被解耦的参数集
+     */
+    $curring(fn, ...args) {
+        return (..._args) => {
+            return fn.call(this, ...args, ..._args);
+        }
+    },
+
+    /**
      * 防抖函数
      * @param method 事件触发的操作
      * @param delay 多少毫秒内连续触发事件，不会执行

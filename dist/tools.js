@@ -3,7 +3,32 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 exports.default = {
+    /**
+     * 函数柯里化
+     * @param fn {function} 需要函数柯里化的函数
+     * @param args 需要被解耦的参数集
+     */
+    $curring: function $curring(fn) {
+        var _this = this;
+
+        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            args[_key - 1] = arguments[_key];
+        }
+
+        return function () {
+            for (var _len2 = arguments.length, _args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                _args[_key2] = arguments[_key2];
+            }
+
+            return fn.call.apply(fn, [_this].concat(_toConsumableArray(args), _args));
+        };
+    },
+
+
     /**
      * 防抖函数
      * @param method 事件触发的操作
@@ -136,7 +161,7 @@ exports.default = {
         });
     },
     $getWeRunData: function $getWeRunData() {
-        var _this = this;
+        var _this2 = this;
 
         return new Promise(function (resolve, reject) {
             wx.getWeRunData({
@@ -150,16 +175,16 @@ exports.default = {
                             content: '小程序需要获取您的微信步数信息',
                             showCancel: false,
                             success: function success() {
-                                _this.$openSetting().then(function (settingData) {
+                                _this2.$openSetting().then(function (settingData) {
                                     if (settingData.authSetting["scope.werun"]) {
-                                        _this.$showToast('授权成功');
-                                        _this.$getWeRunData().then(function (res) {
+                                        _this2.$showToast('授权成功');
+                                        _this2.$getWeRunData().then(function (res) {
                                             resolve(res);
                                         }).catch(function (e) {
                                             reject(e);
                                         });
                                     } else {
-                                        _this.$showToast('授权被拒绝');
+                                        _this2.$showToast('授权被拒绝');
                                         reject({ errMsg: 'auth refused' });
                                     }
                                 });
@@ -169,7 +194,7 @@ exports.default = {
                             }
                         });
                     } else {
-                        _this.$showToast('获取失败', 'none');
+                        _this2.$showToast('获取失败', 'none');
                     }
                 }
             });
@@ -349,7 +374,7 @@ exports.default = {
         });
     },
     $saveImageToPhotosAlbum: function $saveImageToPhotosAlbum(filePath) {
-        var _this2 = this;
+        var _this3 = this;
 
         var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
 
@@ -357,7 +382,7 @@ exports.default = {
             wx.saveImageToPhotosAlbum({
                 filePath: filePath,
                 success: function success(res) {
-                    _this2.$showToast('保存成功');
+                    _this3.$showToast('保存成功');
                 },
                 fail: function fail(e) {
                     if (e.errMsg.includes('auth')) {
@@ -366,12 +391,12 @@ exports.default = {
                             content: '小程序需要写入您的相册',
                             showCancel: false,
                             success: function success() {
-                                _this2.$openSetting().then(function (settingData) {
+                                _this3.$openSetting().then(function (settingData) {
                                     if (settingData.authSetting["scope.writePhotosAlbum"]) {
                                         callback();
-                                        _this2.$showToast('授权成功, 请重试保存', 'none');
+                                        _this3.$showToast('授权成功, 请重试保存', 'none');
                                     } else {
-                                        _this2.$showToast('授权被拒绝', 'none');
+                                        _this3.$showToast('授权被拒绝', 'none');
                                         reject({ errMsg: 'auth refused' });
                                     }
                                 });
@@ -381,7 +406,7 @@ exports.default = {
                             }
                         });
                     } else {
-                        _this2.$showToast('保存失败', 'none');
+                        _this3.$showToast('保存失败', 'none');
                     }
                 }
             });
